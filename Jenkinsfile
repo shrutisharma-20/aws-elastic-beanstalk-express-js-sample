@@ -39,7 +39,7 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
-                    -e DOCKER_HOST=tcp://docker:2375 \
+                    -e DOCKER_HOST=tcp://jenkins-docker:2375 \
                     aquasec/trivy:latest image \
                     --severity HIGH,CRITICAL \
                     --exit-code 1 \
