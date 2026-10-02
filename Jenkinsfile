@@ -39,6 +39,7 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
+                    --network isec6000-assessment2-jenkins_default \
                     -e DOCKER_HOST=tcp://jenkins-docker:2375 \
                     aquasec/trivy:latest image \
                     --severity HIGH,CRITICAL \
