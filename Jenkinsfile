@@ -1,25 +1,31 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:16'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
         DOCKER_IMAGE = 'shrutisharma2003/isec6000-assessment-2:latest'
+        DOCKER_HOST = 'tcp://docker:2375'
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh '''
+                    docker run --rm \
+                    -v "$WORKSPACE:/app" \
+                    -w /app \
+                    node:16 npm install
+                '''
             }
         }
 
         stage('Unit Tests') {
             steps {
-                sh 'npm test'
+                sh '''
+                    docker run --rm \
+                    -v "$WORKSPACE:/app" \
+                    -w /app \
+                    node:16 npm test
+                '''
             }
         }
 
@@ -33,7 +39,6 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
-                    -v /var/run/docker.sock:/var/run/docker.sock \
                     aquasec/trivy:latest image \
                     --severity HIGH,CRITICAL \
                     --exit-code 1 \
