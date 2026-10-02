@@ -43,9 +43,26 @@ pipeline {
                         -e DOCKER_HOST=tcp://jenkins-docker:2375 \
                         aquasec/trivy:latest image \
                         --severity HIGH,CRITICAL \
+                        --exit-code 0 \
+                        $DOCKER_IMAGE > trivy-report.txt
+
+                    cat trivy-report.txt
+
+                    docker run --rm \
+                        --add-host=jenkins-docker:host-gateway \
+                        -e DOCKER_HOST=tcp://jenkins-docker:2375 \
+                        aquasec/trivy:latest image \
+                        --severity HIGH,CRITICAL \
                         --exit-code 1 \
                         $DOCKER_IMAGE
                 '''
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'trivy-report.txt',
+                                     allowEmptyArchive: true,
+                                     fingerprint: true
+                }
             }
         }
 
