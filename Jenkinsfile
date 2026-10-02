@@ -39,6 +39,7 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm \
+                    -e DOCKER_HOST=tcp://docker:2375 \
                     aquasec/trivy:latest image \
                     --severity HIGH,CRITICAL \
                     --exit-code 1 \
